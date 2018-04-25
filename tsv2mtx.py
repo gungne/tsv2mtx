@@ -29,11 +29,21 @@ for item in barcodes:
 	barcodes_file.write(item)
 	barcodes_file.write('\n')
 
+cell_number = len(barcodes)
+# print(cell_number)
 
 ## processing the matrices
 genes_file = open('output/genes.tsv',"w+")
+matrix_file = open('output/matrix.mtx',"w+")
+matrix_file.write('%%MatrixMarket matrix coordinate integer general\n')
+matrix_file.write('%\n')
+
 matrices = tsv_text[1:]
+# print(len(matrices))
+matrix_file.write(str(len(matrices))+' '+str(len(barcodes))+' '+str(len(matrices)*len(barcodes))+'\n')
+
 missing_counter = 0
+row_count = 0 
 for record in matrices:
 	#output the genes matrices
 	keyword = re.sub('\"','',re.findall('\".*\"',record)[0])
@@ -44,3 +54,13 @@ for record in matrices:
 	genes_file.write('\t')
 	genes_file.write(keyword)
 	genes_file.write('\n')
+
+	# output the matrice to mtx
+	row_count += 1
+	values = record.split(' ')[1:]
+	column_count = 0
+	for num_value in values:
+		column_count += 1 
+		if num_value != '0':
+			matrix_file.write(str(row_count)+' '+str(column_count)+' '+str(num_value)+'\n')
+	# print(column_count)
