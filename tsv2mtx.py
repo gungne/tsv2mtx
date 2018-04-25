@@ -16,7 +16,7 @@ for entry in ensemble_text[1:]:
 	ensembl_records[re.sub('\n','',temp_entry[2].upper())] = temp_entry[0]
 
 # print(ensembl_records)
-if os.path.exists('output') ==False :
+if os.path.exists('output') == False :
 	os.mkdir('output')
 
 
@@ -46,6 +46,7 @@ missing_counter = 0
 row_count = 0 
 for record in matrices:
 	#output the genes matrices
+	record = re.sub('\n','',record)
 	keyword = re.sub('\"','',re.findall('\".*\"',record)[0])
 	if keyword not in ensembl_records:
 		ensembl_records[keyword] = 'ENDARGmissing' + str(missing_counter)
@@ -56,11 +57,18 @@ for record in matrices:
 	genes_file.write('\n')
 
 	# output the matrice to mtx
-	row_count += 1
+	
 	values = record.split(' ')[1:]
 	column_count = 0
 	for num_value in values:
+		if str(num_value) != '0':
+			matrix_file.write(str(row_count+1)+' '+str(column_count+1)+' '+str(num_value))
+			matrix_file.write('\n')
 		column_count += 1 
-		if num_value != '0':
-			matrix_file.write(str(row_count)+' '+str(column_count)+' '+str(num_value)+'\n')
+
+	row_count += 1
+			# print(column_count)
+		
+			
+
 	# print(column_count)
