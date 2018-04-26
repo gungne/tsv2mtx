@@ -34,23 +34,27 @@ cell_number = len(barcodes)
 
 ## processing the matrices
 genes_file = open('output/genes.tsv',"w+")
+temp_file = open('output/temp.mtx',"w+")
 matrix_file = open('output/matrix.mtx',"w+")
 matrix_file.write('%%MatrixMarket matrix coordinate integer general\n')
 matrix_file.write('%\n')
 
 matrices = tsv_text[1:]
 # print(len(matrices))
-matrix_file.write(str(len(matrices))+' '+str(len(barcodes))+' '+str(len(matrices)*len(barcodes))+'\n')
+# matrix_file.write(str(len(matrices))+' '+str(len(barcodes))+' '+str(len(matrices)*len(barcodes))+'\n')
 
 missing_counter = 0
 row_count = 0 
+item_count = 0
 for record in matrices:
 	#output the genes matrices
 	record = re.sub('\n','',record)
 	keyword = re.sub('\"','',re.findall('\".*\"',record)[0])
+	keyword = re.sub('\(.*\)','',keyword)
 	if keyword not in ensembl_records:
 		ensembl_records[keyword] = 'ENDARGmissing' + str(missing_counter)
 		missing_counter += 1 
+		continue
 	genes_file.write(ensembl_records[keyword])
 	genes_file.write('\t')
 	genes_file.write(keyword)
@@ -62,13 +66,16 @@ for record in matrices:
 	column_count = 0
 	for num_value in values:
 		if str(num_value) != '0':
-			matrix_file.write(str(row_count+1)+' '+str(column_count+1)+' '+str(num_value))
-			matrix_file.write('\n')
+			temp_file.write(str(row_count+1)+' '+str(column_count+1)+' '+str(num_value))
+			temp_file.write('\n')
+			item_count += 1
 		column_count += 1 
 
 	row_count += 1
 			# print(column_count)
-		
+
+
+matrix_file.write(str(row_count)+' '+str(len(barcodes))+' '+str(item_count)+'\n')
 			
 
 	# print(column_count)
